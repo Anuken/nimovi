@@ -1,0 +1,47 @@
+buildscript{
+    repositories{
+        google()
+        jcenter()
+    }
+    dependencies{
+        classpath 'com.android.tools.build:gradle:4.2.0'
+    }
+}
+
+repositories{
+    google()
+    jcenter()
+}
+
+apply plugin: 'com.android.application'
+
+android{
+    compileSdkVersion 30
+    ndkVersion "21.3.6528147"
+
+    sourceSets{
+        main{
+            manifest.srcFile 'AndroidManifest.xml'
+            assets.srcDirs = ['../assets/']
+        }
+    }
+
+    defaultConfig{
+        applicationId 'io.anuke.nimovi'
+        versionName "testing"
+        versionCode 1
+
+        minSdkVersion 14
+        targetSdkVersion 30
+    }
+
+    externalNativeBuild{
+        cmake{
+            version '3.10.2'
+            path 'src/CMakeLists.txt'
+        }
+    }
+}
+
+dependencies{
+}

@@ -1,0 +1,9 @@
+build
+repl.nim
+assets/atlas.png
+assets/atlas.dat
+.idea
+gifs/
+.gradle
+.cxx
+android/src
