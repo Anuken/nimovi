@@ -10,7 +10,6 @@ buildscript{
 
 repositories{
     google()
-    jcenter()
 }
 
 apply plugin: 'com.android.application'
@@ -43,5 +42,6 @@ android{
     }
 }
 
-dependencies{
+task run(type: Exec){
+    commandLine "${android.getSdkDirectory().getAbsolutePath()}/platform-tools/adb", 'shell', 'am', 'start', '-n', 'io.anuke.nimovi/android.app.NativeActivity'
 }

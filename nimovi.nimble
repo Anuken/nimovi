@@ -59,8 +59,8 @@ task androidBuild, "Android Build Nim":
 
   writeFile("android/src/CMakeLists.txt", cmakeText)
 
-task androidInstall, "Android Install":
+task android, "Android Run":
   androidBuildTask()
   cd "android"
-  shell "./gradlew installDebug"
+  shell "./gradlew installDebug run"
 
