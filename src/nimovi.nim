@@ -1,9 +1,7 @@
-import fcore, ui/ui, canvas, toolbox, tables
+import fcore, ui/ui, drawing, toolbox, tables, state
 
 #enable once UI becomes a thing
-static: echo staticExec("faupack -s -p:../assets-raw/sprites -o:../assets/atlas")
-
-var tog = false
+#static: echo staticExec("faupack -s -p:../assets-raw/sprites -o:../assets/atlas")
 
 proc init() =
   echo "Nimovi: init()"
@@ -16,13 +14,13 @@ proc init() =
   alphaTex.wrapRepeat()
   fau.atlas.patches["alpha"] = alphaTex
 
-  #initCanvas(32, 32)
+  initCanvas(32, 32)
   loadCanvas("/home/anuke/Projects/Mindustry/core/assets-raw/sprites/units/mono.png")
 
 proc run() =
   if keyEscape.tapped: quitApp()
 
-  drawMat(ortho(0, 0, fau.widthf, fau.heightf))
+  screenMat()
 
   #lineRect(0, 0, fau.widthf, fau.heightf, color = colorRoyal, stroke = 5f)
 

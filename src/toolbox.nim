@@ -1,15 +1,4 @@
-import fcore, ui/ui, strformat
-
-type Tool* = enum
-  tPencil = "pencil",
-  tErase = "eraser",
-  tFill = "fill",
-  tPick = "pick",
-  tZoom = "zoom",
-  tUndo = "undo",
-  tRedo = "redo"
-
-var curTool* = Tool.low
+import fcore, ui/ui, strformat, state
 
 proc processToolbox*() =
   let size = fau.widthf / (Tool.high.float32 + 1f)
