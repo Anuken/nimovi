@@ -7,3 +7,4 @@ gifs/
 .gradle
 .cxx
 android/src
+.vscode/
