@@ -16,15 +16,15 @@ proc init() =
   alphaTex.wrapRepeat()
   fau.atlas.patches["alpha"] = alphaTex
 
-  initCanvas(32, 32)
-  #loadCanvas("/home/anuke/Projects/Mindustry/core/assets-raw/sprites/units/mono.png")
+  #initCanvas(32, 32)
+  loadCanvas("/home/anuke/Projects/Mindustry/core/assets-raw/sprites/units/mono.png")
 
 proc run() =
   if keyEscape.tapped: quitApp()
 
   drawMat(ortho(0, 0, fau.widthf, fau.heightf))
 
-  lineRect(0, 0, fau.widthf, fau.heightf, color = colorRoyal, stroke = 5f)
+  #lineRect(0, 0, fau.widthf, fau.heightf, color = colorRoyal, stroke = 5f)
 
   processCanvas()
   processToolbox()
