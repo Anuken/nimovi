@@ -7,6 +7,7 @@ bin           = @["nimovi"]
 binDir        = "build"
 
 requires "nim >= 1.4.2"
+requires "jsony >= 1.0.1"
 requires "https://github.com/Anuken/fau#" & staticExec("git -C fau rev-parse HEAD")
 
 import strformat, os, json, sequtils
