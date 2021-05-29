@@ -20,13 +20,13 @@ proc processEditor*() =
     if button(
         bounds, 
         icon = fau.white, toggled = curColor == color, 
-        iconSize = psize - 6f.uis,
-        style = ButtonStyle(up: "button".patch9, down: "button-down".patch9, iconUpColor: color, iconDownColor: color)
+        iconSize = psize - 8f.uis,
+        style = ButtonStyle(up: fau.white.patch9, iconUpColor: color, iconDownColor: color, upColor: upColor, downColor: downColor, overColor: overColor)
       ):
       switchColor(i)
     
     if curColor == color:
-      lineRect(bounds.x, bounds.y, bounds.w, bounds.h, stroke = 10f.uis, color = colorCoral, z = 1f)
+      lineRect(bounds.x, bounds.y, bounds.w, bounds.h, stroke = 10f.uis, color = downColor, z = 1f)
 
     if (i+1) mod colorsPerRow == 0:
       row.inc
@@ -37,3 +37,5 @@ proc processEditor*() =
   for i in Tool.low..Tool.high:
     if button(rect(i.float32 * bsize, 0, bsize, bsize), icon = (&"icon-{$i}").patch, toggled = curTool == i):
       curTool = i
+  
+  

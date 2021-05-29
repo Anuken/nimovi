@@ -28,6 +28,11 @@ const
             %"FF004D", %"FFA300", %"FFEC27", %"00E436", %"29ADFF", %"83769C", %"FF77A8", %"FFCCAA"]
   )
 
+const
+  upColor* = %"271c52"
+  downColor* =  %"667fff"
+  overColor* = %"211d54"
+
 var
   paletteFolder*: string
   projectFolder*: string

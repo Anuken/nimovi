@@ -1,4 +1,4 @@
-import fau/[fcore, ui], drawing, editor, tables, nio
+import fau/[fcore, ui], drawing, editor, tables, nio, state
 
 #enable once UI becomes a thing
 #static: echo staticExec("faupack -s -p:../assets-raw/sprites -o:../assets/atlas")
@@ -8,10 +8,10 @@ proc init() =
 
   loadConfig()
 
-  uiScale = fau.screenDensity/2f
+  uiScale = when not defined(Android): 1f else: fau.screenDensity/2f
   uiPatchScale = 4f * uiScale
   uiFontScale = 4f * uiScale
-  defaultButtonStyle = ButtonStyle(up: "button".patch9, down: "button-down".patch9)
+  defaultButtonStyle = ButtonStyle(upColor: upColor, downColor: downColor, overColor: overColor)
   defaultFont = loadFont("font.ttf")
 
   var alphaTex = loadTextureStatic("alpha.png")

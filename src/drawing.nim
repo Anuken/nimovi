@@ -177,7 +177,8 @@ proc processCanvas*() =
 
   let pos = canvasPos * zoom + screen()/2f
 
-  lineRect(pos.x - size/2f, pos.y - size/2f, size, size, stroke = 4f.uis, color = colorRoyal)
+  lineRect(pos.x - size/2f, pos.y - size/2f, size, size, stroke = 4f.uis, color = downColor)
+  
   draw(alpha, pos.x, pos.y, size, size)
   draw(canvas.texture, pos.x, pos.y, size, size)
 

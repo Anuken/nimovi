@@ -46,3 +46,9 @@ android{
 task run(type: Exec){
     commandLine "${android.getSdkDirectory().getAbsolutePath()}/platform-tools/adb", 'shell', 'am', 'start', '-n', 'io.anuke.nimovi/android.app.NativeActivity'
 }
+
+tasks.whenTaskAdded{ task ->
+    if(task.name == 'assembleDebug'){
+        run.dependsOn task
+    }
+}
