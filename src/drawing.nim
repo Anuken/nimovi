@@ -1,4 +1,4 @@
-import fau/[fcore, shapes], state
+import fau/[fcore, shapes, ui], state
 import stb_image/read as stbi
 
 var
@@ -15,6 +15,91 @@ proc toCanvas*(vec: Vec2): Vec2i =
 
 template drawable(tool: Tool): bool = tool == tPencil or tool == tErase
 
+proc fill*(pos: Vec2i) =
+  canvas.push()
+
+  #check for destination as a single pixel
+  let 
+    single = readPixels(pos.x, pos.y, 1, 1)
+    dst = cast[ptr Color](single)[]
+
+  single.dealloc
+
+  if dst == curColor:
+    canvas.pop()
+    return
+
+  var
+    data = readPixels(0, 0, canvas.width, canvas.height)
+    colors = cast[ptr UncheckedArray[Color]](data)
+    points: seq[Vec2i]
+    cur = curColor
+    w = canvas.width
+    h = canvas.height
+
+  template col(x, y: int): Color = colors[x + y * w]
+  template set(x, y: int, col: Color) = colors[x + y * w] = col
+  template test(x, y: int): bool = col(x, y) == dst
+  
+  points.add vec2i(pos.x, pos.y)
+  
+  while points.len > 0:
+    let 
+      next = points.pop
+      y = next.y
+
+    var x1 = next.x
+    while x1 >= 0 and test(x1, y): x1.dec
+    x1.inc
+    var
+      spanAbove = false
+      spanBelow = false
+    
+    while x1 < w and test(x1, y):
+      set(x1, y, cur)
+
+      if not spanAbove and y > 0 and test(x1, y - 1):
+        points.add vec2i(x1, y - 1)
+        spanAbove = true
+      elif spanAbove and not test(x1, y - 1):
+        spanAbove = false
+      
+      if not spanBelow and y < h - 1 and test(x1, y + 1):
+        points.add vec2i(x1, y + 1)
+        spanBelow = true
+      elif spanBelow and y < h - 1 and not test(x1, y + 1):
+        spanBelow = false
+      
+      x1.inc
+  
+  canvas.pop()
+
+  canvas.texture.update(0, 0, w, h, data)
+
+  dealloc data
+
+proc pick*(pos: Vec2i) =
+  canvas.push()
+  let data = readPixels(pos.x, pos.y, 1, 1)
+    
+  var 
+    found = false
+    color = cast[ptr Color](data)[]
+
+  color.av = 255'u8
+
+  for i, col in curPalette.colors:
+    if col == color:
+      switchColor(i)
+      found = true
+      break
+  
+  if not found:
+    changeColor(color)
+  
+  dealloc data
+  canvas.pop()
+
 addFauListener(proc(e: FauEvent) =
   case e.kind:
   of feTouch:
@@ -24,28 +109,10 @@ addFauListener(proc(e: FauEvent) =
         lastDrag = pos
         if pos.inside(canvas.width, canvas.height):
           drags.add lastDrag
-      elif curTool == tPick:
+      elif curTool == tPick or curTool == tFill:
         if pos.inside(canvas.width, canvas.height):
-          canvas.push()
-          let data = readPixels(pos.x, pos.y, 1, 1)
-            
-          var 
-            found = false
-            color = cast[ptr Color](data)[]
-
-          color.av = 255'u8
-
-          for i, col in curPalette.colors:
-            if col == color:
-              switchColor(i)
-              found = true
-              break
-          
-          if not found:
-            changeColor(color)
-          
-          dealloc data
-          canvas.pop()
+          if curTool == tPick: pick(pos)
+          else: fill(pos)
   of feDrag:
     if keyMouseLeft.down and e.dragId == 0:
       if curTool.drawable:
@@ -75,8 +142,9 @@ proc loadCanvas*(path: string) =
   canvas.texture.load(width, height, addr data[0])
 
 proc initCanvas*(w, h: int) =
-  ## Creates a new buffer for holding the canvas. This does not clear the buffer.
+  ## Creates a new buffer for holding the canvas. #TODO don't clear the buffer?
   canvas = newFramebuffer(w, h)
+  canvas.clear()
 
 proc processCanvas*() =
   var size = min(fau.widthf, fau.heightf) * zoom
@@ -109,7 +177,7 @@ proc processCanvas*() =
 
   let pos = canvasPos * zoom + screen()/2f
 
-  lineRect(pos.x - size/2f, pos.y - size/2f, size, size, stroke = 4f, color = colorRoyal)
+  lineRect(pos.x - size/2f, pos.y - size/2f, size, size, stroke = 4f.uis, color = colorRoyal)
   draw(alpha, pos.x, pos.y, size, size)
   draw(canvas.texture, pos.x, pos.y, size, size)
 

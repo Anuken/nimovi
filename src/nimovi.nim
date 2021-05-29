@@ -8,26 +8,26 @@ proc init() =
 
   loadConfig()
 
-  uiPatchScale = 4f
+  uiScale = fau.screenDensity/2f
+  uiPatchScale = 4f * uiScale
+  uiFontScale = 4f * uiScale
   defaultButtonStyle = ButtonStyle(up: "button".patch9, down: "button-down".patch9)
   defaultFont = loadFont("font.ttf")
-  uiFontScale = 3f
 
   var alphaTex = loadTextureStatic("alpha.png")
   alphaTex.wrapRepeat()
   fau.atlas.patches["alpha"] = alphaTex
 
   initCanvas(32, 32)
-  #loadCanvas("/home/anuke/Projects/Mindustry/core/assets-raw/sprites/units/mono.png")
 
 proc run() =
   if keyEscape.tapped: quitApp()
 
   screenMat()
 
-  #lineRect(0, 0, fau.widthf, fau.heightf, color = colorRoyal, stroke = 5f)
-
   processCanvas()
   processEditor()
 
-initFau(run, init, windowTitle = "nimovi", maximize = false, windowWidth = 600, windowHeight = 1200)
+  #text(rect(0, 0, fau.widthf, fau.heightf), "density: " & $fau.screenDensity)
+
+initFau(run, init, windowTitle = "nimovi", maximize = false, windowWidth = 600, windowHeight = 1200, clearColor = colorBlack)
