@@ -1,4 +1,4 @@
-import fcore, system, os, state, jsony, base64
+import fau/fcore, system, os, state, jsony, base64
 
 proc dir*(project: Project): string = projectFolder / project.name.encode
 
@@ -74,4 +74,7 @@ proc loadConfig*() =
         let name = file.lastPathPart.decode
         palettes.add readPalette(file, name)
       except: discard #invalid palette
+  
+  curColorIdx = appConfig.lastColor
+  curColor = curPalette[curColorIdx]
   

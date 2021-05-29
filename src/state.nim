@@ -1,4 +1,4 @@
-import fcore, options
+import fau/fcore, options
 
 type Tool* = enum
   tPencil = "pencil",
@@ -11,6 +11,7 @@ type Tool* = enum
 
 type AppConfig* = object
   lastPalette*: string
+  lastColor*: int
 
 type Palette* = object
   name*: string
@@ -35,7 +36,24 @@ var
   palettes*: seq[Palette]
   curPalette*: Palette
   curTool* = Tool.low
+  curColorIdx* = 0
+  curColor*: Color = rgba(1f, 1f, 1f)
+  curAlpha*: float32 = 1f
   canvas*: Framebuffer
   canvasGrid*: bool
   cursorMode*: bool
   brushSize*: int
+
+#TODO move
+proc `[]`*(pal: Palette, i: int): Color =
+  return if i < 0 or i >= pal.colors.len: colorWhite
+  else: pal.colors[i]
+
+#TODO move
+proc switchColor*(i: int) =
+  curColorIdx = i
+  curColor = curPalette.colors[i]
+
+proc changeColor*(c: Color) =
+  curColor = c
+  curPalette.colors[curColorIdx] = c

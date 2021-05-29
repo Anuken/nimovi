@@ -1,4 +1,4 @@
-import fcore, ui/ui, drawing, editor, tables, state, nio
+import fau/[fcore, ui], drawing, editor, tables, nio
 
 #enable once UI becomes a thing
 #static: echo staticExec("faupack -s -p:../assets-raw/sprites -o:../assets/atlas")

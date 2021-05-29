@@ -1,4 +1,4 @@
---path:"fau"
+--path:"."
 --hints:off
 --passC:"-DSTBI_ONLY_PNG"
 --d:noAudio

@@ -1,4 +1,4 @@
-import fcore, ui/ui, shapes, state
+import fau/[fcore, shapes], state
 import stb_image/read as stbi
 
 var
@@ -19,10 +19,33 @@ addFauListener(proc(e: FauEvent) =
   case e.kind:
   of feTouch:
     if e.touchDown and e.touchId == 0:
+      let pos = vec2(e.touchX, e.touchY).toCanvas
       if curTool.drawable:
-        lastDrag = vec2(e.touchX, e.touchY).toCanvas
-        if lastDrag.inside(canvas.width, canvas.height):
+        lastDrag = pos
+        if pos.inside(canvas.width, canvas.height):
           drags.add lastDrag
+      elif curTool == tPick:
+        if pos.inside(canvas.width, canvas.height):
+          canvas.push()
+          let data = readPixels(pos.x, pos.y, 1, 1)
+            
+          var 
+            found = false
+            color = cast[ptr Color](data)[]
+
+          color.av = 255'u8
+
+          for i, col in curPalette.colors:
+            if col == color:
+              switchColor(i)
+              found = true
+              break
+          
+          if not found:
+            changeColor(color)
+          
+          dealloc data
+          canvas.pop()
   of feDrag:
     if keyMouseLeft.down and e.dragId == 0:
       if curTool.drawable:
@@ -70,7 +93,7 @@ proc processCanvas*() =
     canvas.push()
     drawMat(ortho(0, 0, canvas.width, canvas.height))
     for drag in drags:
-      fillRect(drag.x.int, drag.y.int, 1, 1)
+      fillRect(drag.x.int, drag.y.int, 1, 1, color = curColor)
     drags.setLen 0
     canvas.pop()
     screenMat()
