@@ -2,8 +2,6 @@ import fau/[fcore, shapes, ui], state
 import stb_image/read as stbi
 
 var
-  canvasPos = vec2(0f, 0f)
-  zoom = 1f
   lastDrag: Vec2i
   dragging = false
   drags: seq[Vec2i]
@@ -147,8 +145,6 @@ proc initCanvas*(w, h: int) =
   canvas.clear()
 
 proc processCanvas*() =
-  var size = min(fau.widthf, fau.heightf) * zoom
-  var alpha = "alpha".patch
 
   if curTool == tZoom and fau.touches[0].down:
     canvasPos += fau.touches[0].delta / zoom
@@ -168,18 +164,5 @@ proc processCanvas*() =
     fau.batchSort = true
 
     if curTool == tErase: blendNormal.drawBlend()
-
-  let scl = 1f
-  alpha.u = 0f
-  alpha.v = 0f
-  alpha.u2 = canvas.texture.width * zoom * scl
-  alpha.v2 = canvas.texture.height * zoom * scl
-
-  let pos = canvasPos * zoom + screen()/2f
-
-  lineRect(pos.x - size/2f, pos.y - size/2f, size, size, stroke = 4f.uis, color = downColor)
-  
-  draw(alpha, pos.x, pos.y, size, size)
-  draw(canvas.texture, pos.x, pos.y, size, size)
 
   

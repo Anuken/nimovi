@@ -1,7 +1,23 @@
 import fau/[fcore, ui], strformat, state, math
 
-proc processEditor*() =
-  #draw palette
+proc drawCanvas() =
+  var size = min(fau.widthf, fau.heightf) * zoom
+  var alpha = "alpha".patch
+
+  let scl = 1f
+  alpha.u = 0f
+  alpha.v = 0f
+  alpha.u2 = canvas.texture.width * zoom * scl
+  alpha.v2 = canvas.texture.height * zoom * scl
+
+  let pos = canvasPos * zoom + screen()/2f
+  
+  draw(alpha, pos.x, pos.y, size, size)
+  draw(canvas.texture, pos.x, pos.y, size, size)
+
+  lineRect(pos.x - size/2f, pos.y - size/2f, size, size, stroke = 4f.uis, color = downColor, margin = 2.uis)
+
+proc drawPalette() =
   let 
     minSize = 60f.uis #minimum size, disregarding rows
     pad = 10f.uis #padding on left and right of screen
@@ -31,11 +47,16 @@ proc processEditor*() =
     if (i+1) mod colorsPerRow == 0:
       row.inc
 
-  #draw tool buttons
+proc drawTools() =
   let bsize = fau.widthf / (Tool.high.float32 + 1f)
 
   for i in Tool.low..Tool.high:
     if button(rect(i.float32 * bsize, 0, bsize, bsize), icon = (&"icon-{$i}").patch, toggled = curTool == i):
       curTool = i
+
+proc processEditor*() =
+  drawCanvas()
+  drawPalette()
+  drawTools()
   
   

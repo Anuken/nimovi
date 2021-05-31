@@ -36,7 +36,7 @@ task androidBuild, "Android Build Nim":
     rmDir &"android/src/c{arch}"
     let cpu = if arch == "32": "" else: "64"
 
-    shell &"nim c -f --compileOnly --cpu:arm{cpu} --os:android -d:danger -d:lto -c --noMain:on --nimcache:android/src/c{arch} src/{app}.nim"
+    shell &"nim c -f --compileOnly --cpu:arm{cpu} --os:android -d:danger -c --noMain:on --nimcache:android/src/c{arch} src/{app}.nim"
     let includes = @[
       "/home/anuke/.choosenim/toolchains/nim-#devel/lib",
       "/home/anuke/Projects/glfm/glfm/include",

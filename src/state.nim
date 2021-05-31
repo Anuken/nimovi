@@ -48,6 +48,11 @@ var
   canvasGrid*: bool
   cursorMode*: bool
   brushSize*: int
+  botMenu*: bool
+  topMenu*: bool
+
+  canvasPos* = vec2(0f, 0f)
+  zoom* = 1f
 
 #TODO move
 proc `[]`*(pal: Palette, i: int): Color =
