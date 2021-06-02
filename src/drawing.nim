@@ -98,31 +98,35 @@ proc pick*(pos: Vec2i) =
   dealloc data
   canvas.pop()
 
+proc tapped(pos: Vec2i) =
+  if curTool.drawable:
+    lastDrag = pos
+    if pos.inside(canvas.width, canvas.height):
+      drags.add lastDrag
+  elif curTool == tPick or curTool == tFill:
+    if pos.inside(canvas.width, canvas.height):
+      if curTool == tPick: pick(pos)
+      else: fill(pos)
+
+proc dragged(pos: Vec2i) =
+  if curTool.drawable:
+    #use bresenham's algorithm to link points
+    for point in line(lastDrag, pos):
+      if point != lastDrag and point.inside(canvas.width, canvas.height):
+        drags.add point
+      lastDrag = point
+
 addFauListener(proc(e: FauEvent) =
   case e.kind:
   of feTouch:
     if e.touchDown and e.touchId == 0:
-      let pos = vec2(e.touchX, e.touchY).toCanvas
-      if curTool.drawable:
-        lastDrag = pos
-        if pos.inside(canvas.width, canvas.height):
-          drags.add lastDrag
-      elif curTool == tPick or curTool == tFill:
-        if pos.inside(canvas.width, canvas.height):
-          if curTool == tPick: pick(pos)
-          else: fill(pos)
+      tapped(e.touchPos.toCanvas)
   of feDrag:
     if keyMouseLeft.down and e.dragId == 0:
-      if curTool.drawable:
-        let next = vec2(e.dragX, e.dragY).toCanvas
-
-        #use bresenham's algorithm to link points
-        for point in line(lastDrag, next):
-          if point != lastDrag and point.inside(canvas.width, canvas.height):
-            drags.add point
-          lastDrag = point
+      dragged(e.dragPos.toCanvas)
   of feScroll:
-    zoom += e.scrollY / 10f * zoom
+    #for debugging only
+    zoom += e.scroll.y / 10f * zoom
     zoom = clamp(zoom, 1f / 20f, 20f)
   else: discard
 )

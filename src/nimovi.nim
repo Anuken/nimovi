@@ -10,7 +10,7 @@ proc init() =
 
   uiScale = when not defined(Android): 1f else: fau.screenDensity/2f
   uiPatchScale = 4f * uiScale
-  uiFontScale = 4f * uiScale
+  uiFontScale = 2f * uiScale
   defaultButtonStyle = ButtonStyle(upColor: upColor, downColor: downColor, overColor: overColor)
   defaultFont = loadFont("font.ttf")
 
@@ -28,6 +28,6 @@ proc run() =
   processCanvas()
   processEditor()
 
-  #text(rect(0, 0, fau.widthf, fau.heightf), "density: " & $fau.screenDensity)
+  #discard button(rect(fau.widthf/2f, fau.heightf/2f, 300, 120), "arbitrary text that should wrap correctly")
 
-initFau(run, init, windowTitle = "nimovi", maximize = false, windowWidth = 600, windowHeight = 1200, clearColor = colorBlack)
+initFau(run, init, windowTitle = "nimovi", maximize = false, windowWidth = 600, windowHeight = 1200, clearColor = backColor)

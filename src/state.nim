@@ -29,9 +29,10 @@ const
   )
 
 const
+  backColor* = %"0c0a1f"
   upColor* = %"271c52"
   downColor* =  %"667fff"
-  overColor* = %"211d54"
+  overColor* = %"333482"
 
 var
   paletteFolder*: string
