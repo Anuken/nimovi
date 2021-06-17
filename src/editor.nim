@@ -50,8 +50,10 @@ proc drawPalette() =
 proc drawTools() =
   let bsize = fau.widthf / (Tool.high.float32 + 1f)
 
+  if fau.insets[2] != 0f:
+    fillRect(0, 0, fau.widthf, fau.insets[2].abs, color = upColor)
   for i in Tool.low..Tool.high:
-    if button(rect(i.float32 * bsize, 0, bsize, bsize), icon = (&"icon-{$i}").patch, toggled = curTool == i):
+    if button(rect(i.float32 * bsize, fau.insets[2].abs, bsize, bsize), icon = (&"icon-{$i}").patch, toggled = curTool == i):
       curTool = i
 
 proc processEditor*() =

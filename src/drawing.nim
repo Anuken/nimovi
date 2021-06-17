@@ -1,4 +1,4 @@
-import fau/[fcore, shapes, ui], state
+import fau/[fcore], state
 import stb_image/read as stbi
 
 var

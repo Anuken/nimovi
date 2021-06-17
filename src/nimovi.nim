@@ -28,6 +28,6 @@ proc run() =
   processCanvas()
   processEditor()
 
-  #discard button(rect(fau.widthf/2f, fau.heightf/2f, 300, 120), "arbitrary text that should wrap correctly")
+  #discard button(rect(fau.widthf/2f, fau.heightf/2f, 300, 120), $fau.insets)
 
 initFau(run, init, windowTitle = "nimovi", maximize = false, windowWidth = 600, windowHeight = 1200, clearColor = backColor)

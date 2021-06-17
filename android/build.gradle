@@ -48,7 +48,7 @@ task run(type: Exec){
 }
 
 tasks.whenTaskAdded{ task ->
-    if(task.name == 'assembleDebug'){
+    if(task.name == 'installDebug'){
         run.dependsOn task
     }
 }
