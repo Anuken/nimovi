@@ -12,7 +12,7 @@ proc init() =
   uiPatchScale = 4f * uiScale
   uiFontScale = 3f * uiScale
   defaultButtonStyle = ButtonStyle(upColor: upColor, downColor: downColor, overColor: overColor)
-  defaultSliderStyle = SliderStyle(upColor: overColor, downColor: downColor, overColor: overColor, backColor: colorBlack, back: "white".patch9, up: "slider-knob".patch9, sliderWidth: 30f)
+  defaultSliderStyle = SliderStyle(backColor: colorBlack, back: "white".patch9, up: "button".patch9, down: "button-down".patch9, sliderWidth: 30f)
   defaultFont = loadFont("font.ttf")
 
   var alphaTex = loadTextureStatic("alpha.png")

@@ -61,7 +61,7 @@ proc drawTools() =
   if botMenu:
     fillRect(0, menubot, fau.widthf, 200.uis, color = upColor)
     var bs = brushSize.float32
-    let bounds = rect(0, menubot + 40, fau.widthf, 60f)
+    let bounds = rect(0, menubot + 40.uis, fau.widthf, 60.uis)
     slider(bounds, 0, maxBrushes - 1, bs)
     text(bounds, &"Brush Size: {$(brushSize + 1)}")
     brushSize = bs.int
