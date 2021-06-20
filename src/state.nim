@@ -48,7 +48,7 @@ var
   canvas*: Framebuffer
   canvasGrid*: bool
   cursorMode*: bool
-  brushSize*: int
+  brushSize*: int = 1
   botMenu*: bool
   topMenu*: bool
 

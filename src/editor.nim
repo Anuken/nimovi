@@ -48,13 +48,23 @@ proc drawPalette() =
       row.inc
 
 proc drawTools() =
-  let bsize = fau.widthf / (Tool.high.float32 + 1f)
+  let 
+    bsize = fau.widthf / (Tool.high.float32 + 1f)
+    offset = fau.insets[2].abs
+    bmh = 60.uis #bottom menu button height
+
+  if botMenu:
+    discard
 
   if fau.insets[2] != 0f:
-    fillRect(0, 0, fau.widthf, fau.insets[2].abs, color = upColor)
+    fillRect(0, 0, fau.widthf, offset, color = upColor)
+  
   for i in Tool.low..Tool.high:
-    if button(rect(i.float32 * bsize, fau.insets[2].abs, bsize, bsize), icon = (&"icon-{$i}").patch, toggled = curTool == i):
+    if button(rect(i.float32 * bsize, offset, bsize, bsize), icon = (&"icon-{$i}").patch, toggled = curTool == i):
       curTool = i
+  
+  if button(rect(0, offset + bsize, fau.widthf, bmh), icon = (if botMenu: "icon-down" else: "icon-up").patch):
+    botMenu = not botMenu
 
 proc processEditor*() =
   drawCanvas()
