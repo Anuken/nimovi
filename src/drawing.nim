@@ -117,6 +117,9 @@ proc dragged(pos: Vec2i) =
       lastDrag = point
 
 addFauListener(proc(e: FauEvent) =
+  #no drawing when top menu is open
+  if menuOpen: return
+
   case e.kind:
   of feTouch:
     if e.touchDown and e.touchId == 0:
@@ -150,18 +153,20 @@ proc initCanvas*(w, h: int) =
 
 proc processCanvas*() =
 
-  if curTool == tZoom and fau.touches[0].down:
+  #pan canvas
+  if not menuOpen and curTool == tZoom and fau.touches[0].down:
     canvasPos += fau.touches[0].delta / zoom
 
   if drags.len > 0:
     fau.batchSort = false
     
     if curTool == tErase: blendErase.drawBlend()
+    let brush = brushes[brushSize]
 
     canvas.push()
     drawMat(ortho(0, 0, canvas.width, canvas.height))
     for drag in drags:
-      fillRect(drag.x.int, drag.y.int, 1, 1, color = curColor)
+      drawRect(brush, drag.x.int - brush.width/2f + 0.5f, drag.y.int - brush.height/2f + 0.5f, brush.width, brush.height, color = curColor)
     drags.setLen 0
     canvas.pop()
     screenMat()

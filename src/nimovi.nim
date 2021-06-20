@@ -10,13 +10,17 @@ proc init() =
 
   uiScale = when not defined(Android): 1f else: fau.screenDensity/2f
   uiPatchScale = 4f * uiScale
-  uiFontScale = 2f * uiScale
+  uiFontScale = 3f * uiScale
   defaultButtonStyle = ButtonStyle(upColor: upColor, downColor: downColor, overColor: overColor)
+  defaultSliderStyle = SliderStyle(upColor: overColor, downColor: downColor, overColor: overColor, backColor: colorBlack, back: "white".patch9, up: "slider-knob".patch9, sliderWidth: 30f)
   defaultFont = loadFont("font.ttf")
 
   var alphaTex = loadTextureStatic("alpha.png")
   alphaTex.wrapRepeat()
   fau.atlas.patches["alpha"] = alphaTex
+
+  for i in 0..<maxBrushes:
+    brushes[i] = fau.atlas.patches["brush" & $(i + 1)]
 
   initCanvas(32, 32)
 

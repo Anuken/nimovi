@@ -19,6 +19,7 @@ proc drawCanvas() =
 
 proc drawPalette() =
   let 
+    tmh = 60.uis #top menu button height
     minSize = 60f.uis #minimum size, disregarding rows
     pad = 10f.uis #padding on left and right of screen
     colors = curPalette.colors.len
@@ -26,8 +27,11 @@ proc drawPalette() =
     maxFit = (awidth / minSize).int #maximum amount of colors that can fit per row
     psize = max(awidth / maxFit, awidth / colors)
     colorsPerRow = min(maxFit, colors)
-    yoff = -5f.uis
+    yoff = -5f.uis - tmh
     xoff = (fau.widthf - colorsPerRow * psize) / 2f
+
+  if button(rect(0, fau.heightf - tmh, fau.widthf, tmh), icon = (if topMenu: "icon-up" else: "icon-down").patch):
+    topMenu = not topMenu
 
   var row = 0
 
@@ -52,9 +56,15 @@ proc drawTools() =
     bsize = fau.widthf / (Tool.high.float32 + 1f)
     offset = fau.insets[2].abs
     bmh = 60.uis #bottom menu button height
-
+    menubot = offset + bsize + bmh
+  
   if botMenu:
-    discard
+    fillRect(0, menubot, fau.widthf, 200.uis, color = upColor)
+    var bs = brushSize.float32
+    let bounds = rect(0, menubot + 40, fau.widthf, 60f)
+    slider(bounds, 0, maxBrushes - 1, bs)
+    text(bounds, &"Brush Size: {$(brushSize + 1)}")
+    brushSize = bs.int
 
   if fau.insets[2] != 0f:
     fillRect(0, 0, fau.widthf, offset, color = upColor)
@@ -63,6 +73,7 @@ proc drawTools() =
     if button(rect(i.float32 * bsize, offset, bsize, bsize), icon = (&"icon-{$i}").patch, toggled = curTool == i):
       curTool = i
   
+  #TODO not sure if bot menu is a good idea
   if button(rect(0, offset + bsize, fau.widthf, bmh), icon = (if botMenu: "icon-down" else: "icon-up").patch):
     botMenu = not botMenu
 

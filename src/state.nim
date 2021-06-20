@@ -33,6 +33,7 @@ const
   upColor* = %"271c52"
   downColor* =  %"667fff"
   overColor* = %"333482"
+  maxBrushes* = 20
 
 var
   paletteFolder*: string
@@ -40,6 +41,7 @@ var
   appConfig*: AppConfig
   projects*: seq[Project]
   palettes*: seq[Palette]
+  brushes*: array[maxBrushes, Patch]
   curPalette*: Palette
   curTool* = Tool.low
   curColorIdx* = 0
@@ -48,7 +50,7 @@ var
   canvas*: Framebuffer
   canvasGrid*: bool
   cursorMode*: bool
-  brushSize*: int = 1
+  brushSize*: 0..maxBrushes = 0
   botMenu*: bool
   topMenu*: bool
 
@@ -68,3 +70,5 @@ proc switchColor*(i: int) =
 proc changeColor*(c: Color) =
   curColor = c
   curPalette.colors[curColorIdx] = c
+
+template menuOpen*(): bool = topMenu or botMenu
