@@ -10,12 +10,12 @@ proc drawCanvas() =
   alpha.u2 = canvas.texture.width * zoom * scl
   alpha.v2 = canvas.texture.height * zoom * scl
 
-  let pos = canvasPos * zoom + screen()/2f
+  let pos = canvasPos * zoom + fau.screen/2f
   
-  draw(alpha, pos.x, pos.y, size, size)
-  draw(canvas.texture, pos.x, pos.y, size, size)
+  draw(alpha, pos, size.vec2)
+  draw(canvas.texture, pos, size.vec2)
 
-  lineRect(pos.x - size/2f, pos.y - size/2f, size, size, stroke = 4f.uis, color = downColor, margin = 2.uis)
+  lineRect(pos - size/2f, size.vec2, stroke = 4f.uis, color = downColor, margin = 2.uis)
 
 proc drawPalette() =
   let 
@@ -46,7 +46,7 @@ proc drawPalette() =
       switchColor(i)
     
     if curColor == color:
-      lineRect(bounds.x, bounds.y, bounds.w, bounds.h, stroke = 10f.uis, color = downColor, z = 1f)
+      lineRect(bounds, stroke = 10f.uis, color = downColor, z = 1f)
 
     if (i+1) mod colorsPerRow == 0:
       row.inc

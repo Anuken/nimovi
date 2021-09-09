@@ -8,7 +8,7 @@ var
 
 proc toCanvas*(vec: Vec2): Vec2i =
   var size = min(fau.widthf, fau.heightf) * zoom
-  var raw = (vec - screen()/2f - canvasPos * zoom + vec2(size/2f)) / size * canvas.wh
+  var raw = (vec - fau.screen/2f - canvasPos * zoom + vec2(size/2f)) / size * canvas.size
   return vec2i(raw.x.int, canvas.height - 1 - raw.y.int)
 
 template drawable(tool: Tool): bool = tool == tPencil or tool == tErase
