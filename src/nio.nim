@@ -1,4 +1,4 @@
-import fau/fcore, system, os, state, jsony, base64
+import core, system, os, state, jsony, base64
 
 proc dir*(project: Project): string = projectFolder / project.name.encode
 

@@ -1,4 +1,4 @@
-import fau/fcore, options
+import core, options
 
 type Tool* = enum
   tPencil = "pencil",

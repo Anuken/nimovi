@@ -1,4 +1,4 @@
-import fau/[fcore], state
+import core, state
 import stb_image/read as stbi
 
 var
@@ -7,39 +7,37 @@ var
   drags: seq[Vec2i]
 
 proc toCanvas*(vec: Vec2): Vec2i =
-  var size = min(fau.widthf, fau.heightf) * zoom
-  var raw = (vec - fau.screen/2f - canvasPos * zoom + vec2(size/2f)) / size * canvas.size
-  return vec2i(raw.x.int, canvas.height - 1 - raw.y.int)
+  var size = min(fau.size.x, fau.size.y) * zoom
+  var raw = (vec - fau.size/2f - canvasPos * zoom + vec2(size/2f)) / size * canvas.size.vec2
+  return vec2i(raw.x.int, canvas.size.y - 1 - raw.y.int)
 
 template drawable(tool: Tool): bool = tool == tPencil or tool == tErase
 
 proc fill*(pos: Vec2i) =
-  canvas.push()
 
   #check for destination as a single pixel
   let 
-    single = readPixels(pos.x, pos.y, 1, 1)
+    single = canvas.read(pos, vec2i(1))
     dst = cast[ptr Color](single)[]
 
   single.dealloc
 
   if dst == curColor:
-    canvas.pop()
     return
 
   var
-    data = readPixels(0, 0, canvas.width, canvas.height)
+    data = canvas.read(vec2i(), canvas.size)
     colors = cast[ptr UncheckedArray[Color]](data)
     points: seq[Vec2i]
     cur = curColor
-    w = canvas.width
-    h = canvas.height
+    w = canvas.size.x
+    h = canvas.size.y
 
   template col(x, y: int): Color = colors[x + y * w]
   template set(x, y: int, col: Color) = colors[x + y * w] = col
   template test(x, y: int): bool = col(x, y) == dst
   
-  points.add vec2i(pos.x, pos.y)
+  points.add pos
   
   while points.len > 0:
     let 
@@ -69,16 +67,13 @@ proc fill*(pos: Vec2i) =
         spanBelow = false
       
       x1.inc
-  
-  canvas.pop()
 
-  canvas.texture.update(0, 0, w, h, data)
+  canvas.texture.update(vec2i(), canvas.size, data)
 
   dealloc data
 
 proc pick*(pos: Vec2i) =
-  canvas.push()
-  let data = readPixels(pos.x, pos.y, 1, 1)
+  let data = canvas.read(pos, vec2i(1))
     
   var 
     found = false
@@ -96,15 +91,14 @@ proc pick*(pos: Vec2i) =
     changeColor(color)
   
   dealloc data
-  canvas.pop()
 
 proc tapped(pos: Vec2i) =
   if curTool.drawable:
     lastDrag = pos
-    if pos.inside(canvas.width, canvas.height):
+    if pos.inside(canvas.size):
       drags.add lastDrag
   elif curTool == tPick or curTool == tFill:
-    if pos.inside(canvas.width, canvas.height):
+    if pos.inside(canvas.size):
       if curTool == tPick: pick(pos)
       else: fill(pos)
 
@@ -112,7 +106,7 @@ proc dragged(pos: Vec2i) =
   if curTool.drawable:
     #use bresenham's algorithm to link points
     for point in line(lastDrag, pos):
-      if point != lastDrag and point.inside(canvas.width, canvas.height):
+      if point != lastDrag and point.inside(canvas.size):
         drags.add point
       lastDrag = point
 
@@ -143,12 +137,12 @@ proc loadCanvas*(path: string) =
   data = stbi.load(path, width, height, channels, 4)
 
   #TODO error handling
-  canvas = newFramebuffer(width, height)
-  canvas.texture.load(width, height, addr data[0])
+  canvas = newFramebuffer(vec2i(width, height))
+  canvas.texture.load(canvas.size, addr data[0])
 
-proc initCanvas*(w, h: int) =
+proc initCanvas*(size: Vec2i) =
   ## Creates a new buffer for holding the canvas. #TODO don't clear the buffer?
-  canvas = newFramebuffer(w, h)
+  canvas = newFramebuffer(size)
   canvas.clear()
 
 proc processCanvas*() =
@@ -158,20 +152,18 @@ proc processCanvas*() =
     canvasPos += fau.touches[0].delta / zoom
 
   if drags.len > 0:
-    fau.batchSort = false
-    
-    if curTool == tErase: blendErase.drawBlend()
     let brush = brushes[brushSize]
+    
+    drawSort(false)
+    drawBuffer(canvas)
+    drawMat(ortho(canvas.size))
 
-    canvas.push()
-    drawMat(ortho(0, 0, canvas.width, canvas.height))
     for drag in drags:
-      drawRect(brush, drag.x.int - brush.width/2f + 0.5f, drag.y.int - brush.height/2f + 0.5f, brush.width, brush.height, color = curColor)
+      drawRect(brush, drag.x.int - brush.width/2f + 0.5f, drag.y.int - brush.height/2f + 0.5f, brush.width, brush.height, color = curColor, blend = if curTool == tErase: blendErase else: blendNormal)
     drags.setLen 0
-    canvas.pop()
-    screenMat()
-    fau.batchSort = true
 
-    if curTool == tErase: blendNormal.drawBlend()
+    drawBufferScreen()
+    screenMat()
+    drawSort(true)
 
   
