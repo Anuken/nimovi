@@ -11,3 +11,4 @@ android/src
 nimble.develop
 nimble.paths
 local.properties
+.DS_Store
