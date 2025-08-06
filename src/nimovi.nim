@@ -15,7 +15,7 @@ proc init() =
   defaultSliderStyle = SliderStyle(backColor: colorBlack, back: "white".patch9, up: "button".patch9, down: "button-down".patch9, sliderWidth: 30f)
   defaultFont = loadFont("font.ttf")
 
-  var alphaTex = loadTextureStatic("alpha.png")
+  var alphaTex = loadTexture("alpha.png")
   alphaTex.wrap = twRepeat
   fau.atlas.patches["alpha"] = alphaTex
 
@@ -27,11 +27,11 @@ proc init() =
 proc run() =
   if keyEscape.tapped: quitApp()
 
-  screenMat()
-
+  fau.cam.use(fau.size, fau.size/2f)
+  
   processCanvas()
   processEditor()
 
   #discard button(rect(fau.widthf/2f, fau.heightf/2f, 300, 120), $fau.insets)
 
-initFau(run, init, windowTitle = "nimovi", maximize = false, windowWidth = 600, windowHeight = 1200, clearColor = backColor)
+initFau(run, init, params = initParams(title = "nimovi", maximize = false, size = vec2i(600, 1200), clearColor = backColor))

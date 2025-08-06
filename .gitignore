@@ -8,3 +8,6 @@ gifs/
 .cxx
 android/src
 .vscode/
+nimble.develop
+nimble.paths
+local.properties

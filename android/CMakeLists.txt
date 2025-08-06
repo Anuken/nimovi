@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 4.0.0)
+project(nimovi)
 
 # build native_app_glue as a static lib
 set(${CMAKE_C_FLAGS}, "${CMAKE_C_FLAGS}")
@@ -14,6 +15,10 @@ set(CMAKE_SHARED_LINKER_FLAGS
     "${CMAKE_SHARED_LINKER_FLAGS} -v -u ANativeActivity_onCreate")
 
 file(GLOB SOURCES "*.c")
+
+if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfloat-abi=softfp")
+endif()
 
 if(${ANDROID_ABI} STREQUAL "arm64-v8a" OR ${ANDROID_ABI} STREQUAL "x86_64")
  add_library(nimovi SHARED

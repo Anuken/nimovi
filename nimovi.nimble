@@ -8,7 +8,7 @@ binDir        = "build"
 
 requires "nim >= 1.4.2"
 requires "jsony >= 1.0.1"
-requires "https://github.com/Anuken/fau#" & staticExec("git -C fau rev-parse HEAD")
+#requires "https://github.com/Anuken/fau#" & staticExec("git -C fau rev-parse HEAD")
 
 import strformat, os, json, sequtils
 
@@ -27,32 +27,32 @@ task debug, "Debug build":
 task release, "Release build":
   shell &"nim r -d:release -d:danger -o:build/{app} src/{app}"
 
-task androidBuild, "Android Build Nim":
+task androidBuild, "Android build":
   var cmakeText = "android/CMakeLists.txt".readFile()
 
-  shell "cp android/CMakeLists.txt android/src"
+  mkDir "android/src"
+  cpFile("android/CMakeLists.txt", "android/src/CMakeLists.txt")
 
   for arch in ["32", "64"]:
-    rmDir &"android/src/c{arch}"
+    if dirExists(&"android/src/c{arch}"):
+      rmDir &"android/src/c{arch}"
     let cpu = if arch == "32": "" else: "64"
 
     shell &"nim c -f --compileOnly --cpu:arm{cpu} --os:android -d:danger -c --noMain:on --nimcache:android/src/c{arch} src/{app}.nim"
-    let includes = @[
-      "/home/anuke/.choosenim/toolchains/nim-#devel/lib",
-      "/home/anuke/Projects/glfm/glfm/include",
-      "/home/anuke/Projects/glfm/glfm/src",
-      "/home/anuke/Projects/glfm/glfm/example/src",
-      "/home/anuke/.cache/nim/nimterop/fuse/soloud/include"
-    ]
-    var sources: seq[string]
+    var 
+      includes: seq[string]
+      sources: seq[string]
 
     let compData = parseJson(readFile(&"android/src/c{arch}/{app}.json"))
     let compList = compData["compile"]
     for arr in compList.items:
       sources.add($arr[0])
-
-    sources.add("\"/home/anuke/Projects/glfm/glfm/src/glfm_platform_android.c\"")
-    sources.add("\"/home/anuke/Projects/glfm/glfm/src/glfm_platform.h\"")
+    
+    #scrape includes from C arguments
+    if compList.len > 0:
+      let firstCommand = compList[0][1]
+      let split = ($firstCommand).split(" ").filterIt(it.startsWith("-I")).mapIt(it[2..^1]).mapIt(if it.startsWith("'"): it[1..^2] else: it)
+      includes.add split
 
     cmakeText = cmakeText
     .replace("${NIM_SOURCES_" & arch & "}", sources.join("\n"))
@@ -65,3 +65,7 @@ task android, "Android Run":
   cd "android"
   shell "./gradlew run"
 
+task androidDebug, "Android Run":
+  androidBuildTask()
+  cd "android"
+  shell "./gradlew assembleDebug"
